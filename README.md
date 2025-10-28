@@ -128,17 +128,21 @@ spring.jpa.defer-datasource-initialization=true
 
 ## 📚 학습 일지
 
-- **[Day 1 (2025.10.21)](docs/day1.md)** - 프로젝트 초기 설정 및 기본 CRUD 구현
-  - 프로젝트 설정 및 MySQL 연동
-  - JPA 엔티티, Repository, Service, Controller 구현
-  - Thymeleaf 뷰 작성
-  - 주요 질문: @Transactional, Model 객체, ViewResolver, POST 데이터 처리
+## 📚 학습 일지
 
-## 🎯 다음 계획 (Phase 2)
+- **[Day 1 (2025.10.21)](docs/day1.md)** - 프로젝트 초기 설정 및 기본 CRUD 구현
+    - 프로젝트 설정 및 MySQL 연동
+    - JPA 엔티티, Repository, Service, Controller 구현
+    - Thymeleaf 뷰 작성
+    - 주요 질문: @Transactional, Model 객체, ViewResolver, POST 데이터 처리
+
+- **[Day 2 (2025.10.22)](docs/day2.md)** - 페이징 및 검색 기능 구현
+    - Pageable을 이용한 페이징 처리
+    - Query Method로 검색 기능 구현
+    - 검색 + 페이징 조합
+    - 주요 질문: Pageable, Page<T>, Query Method, @RequestParam
 
 ### 추가 기능 구현 예정
-- [ ] 페이징 처리 (Pageable)
-- [ ] 검색 기능 (제목, 내용, 작성자)
 - [ ] 댓글 기능 (Comment 엔티티)
 - [ ] UI/UX 개선 (Bootstrap/Tailwind CSS)
 - [ ] 파일 첨부 기능

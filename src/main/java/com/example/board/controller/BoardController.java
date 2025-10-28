@@ -3,11 +3,16 @@ package com.example.board.controller;
 import com.example.board.entity.Board;
 import com.example.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -17,9 +22,23 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/board/list")
-    public String list(Model model) {
-        List<Board> boards = boardService.findAll();
+
+    public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable,
+                       @RequestParam(required = false) String searchType,
+                       @RequestParam(required = false) String keyword,
+                       Model model) {
+        Page<Board> boards;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            boards = boardService.search(searchType, keyword, pageable);
+        } else {
+            boards = boardService.findAll(pageable);
+        }
+
         model.addAttribute("boards", boards);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("keyword", keyword);
+
         return "board/list";
     }
 
@@ -59,4 +78,5 @@ public class BoardController {
         boardService.delete(id);
         return "redirect:/board/list";
     }
+
 }

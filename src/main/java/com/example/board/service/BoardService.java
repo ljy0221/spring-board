@@ -3,6 +3,8 @@ package com.example.board.service;
 import com.example.board.entity.Board;
 import com.example.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +15,8 @@ import java.util.List;
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public List<Board> findAll(){
-        return boardRepository.findAll();
+    public Page<Board> findAll(Pageable pageable){
+        return boardRepository.findAll(pageable);
     }
 
     @Transactional
@@ -38,5 +40,20 @@ public class BoardService {
 
     public void delete(Long id){
         boardRepository.deleteById(id);
+    }
+
+    public Page<Board> search(String searchType, String keyword, Pageable pageable) {
+        switch (searchType) {
+            case "title":
+                return boardRepository.findByTitleContaining(keyword, pageable);
+            case "content":
+                return boardRepository.findByContentContaining(keyword, pageable);
+            case "writer":
+                return boardRepository.findByWriterContaining(keyword, pageable);
+            case "titleOrContent":
+                return boardRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
+            default:
+                return boardRepository.findAll(pageable);
+        }
     }
 }
