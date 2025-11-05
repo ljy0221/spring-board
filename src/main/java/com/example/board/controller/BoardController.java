@@ -1,7 +1,10 @@
 package com.example.board.controller;
 
 import com.example.board.entity.Board;
+import com.example.board.entity.Comment;
 import com.example.board.service.BoardService;
+import com.example.board.service.CommentService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @GetMapping("/board/list")
 
@@ -45,7 +49,9 @@ public class BoardController {
     @GetMapping("/board/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Board board = boardService.findById(id);
+        List<Comment> comments = commentService.findByBoardId(id);
         model.addAttribute("board", board);
+        model.addAttribute("comments", comments);
         return "board/detail";
     }
 

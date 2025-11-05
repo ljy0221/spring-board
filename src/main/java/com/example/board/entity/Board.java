@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -32,6 +34,12 @@ public class Board {
 
     @Column(nullable = false)
     private Integer viewCount = 0;
+    
+    @OneToMany(mappedBy = "board",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
