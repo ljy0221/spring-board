@@ -1,40 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>게시글 작성</title>
+<meta charset="UTF-8">
+<title>게시글 작성</title>
 </head>
 <body>
-<h1>게시글 작성</h1>
+	<h1>게시글 작성</h1>
 
-<form th:action="@{/board/write}" method="post">
-    <table>
-        <tr>
-            <th>제목</th>
-            <td>
-                <input type="text" name="title" size="50" required />
-            </td>
-        </tr>
-        <tr>
-            <th>작성자</th>
-            <td>
-                <input type="text" name="writer" size="20" required />
-            </td>
-        </tr>
-        <tr>
-            <th>내용</th>
-            <td>
-                <textarea name="content" rows="10" cols="50" required></textarea>
-            </td>
-        </tr>
-    </table>
+	<form th:action="@{/board/write}" method="post">
+		<table>
+			<tr>
+				<th>제목</th>
+				<td><input type="text" name="title" size="50" required /></td>
+			</tr>
+			<tr>
+				<th>내용</th>
+				<td><textarea name="content" rows="10" cols="50" required></textarea>
+				</td>
+			</tr>
+		</table>
 
-    <div>
-        <button type="submit">작성</button>
-        <a th:href="@{/board/list}">
-            <button type="button">취소</button>
-        </a>
-    </div>
-</form>
+		<div>
+			<button type="submit">작성</button>
+			<a th:href="@{/board/list}">
+				<button type="button">취소</button>
+			</a>
+		</div>
+	</form>
 </body>
 </html>

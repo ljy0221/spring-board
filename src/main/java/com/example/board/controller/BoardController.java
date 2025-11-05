@@ -60,8 +60,14 @@ public class BoardController {
 	}
 
 	@GetMapping("/board/write")
-	public String writeForm() {
-		return "board/write";
+	public String writeForm(HttpSession session) {
+	    User loginUser = (User) session.getAttribute("loginUser");
+	    
+	    if (loginUser == null) {
+	        return "redirect:/user/login";
+	    }
+	    
+	    return "board/write";
 	}
 
 	@PostMapping("/board/write")
@@ -79,10 +85,22 @@ public class BoardController {
 	}
 
 	@GetMapping("/board/edit/{id}")
-	public String editForm(@PathVariable Long id, Model model) {
-		Board board = boardService.findById(id);
-		model.addAttribute("board", board);
-		return "board/edit";
+	public String editForm(@PathVariable Long id, Model model, HttpSession session) {
+	    User loginUser = (User) session.getAttribute("loginUser");
+	    
+	    if (loginUser == null) {
+	        return "redirect:/user/login";
+	    }
+	    
+	    Board board = boardService.findById(id);
+	    
+	    // 본인 확인
+	    if (!loginUser.getName().equals(board.getWriter())) {
+	        throw new RuntimeException("본인이 작성한 글만 수정할 수 있습니다.");
+	    }
+	    
+	    model.addAttribute("board", board);
+	    return "board/edit";
 	}
 
 	@PostMapping("/board/edit/{id}")

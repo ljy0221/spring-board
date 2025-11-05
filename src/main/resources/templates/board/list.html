@@ -26,6 +26,22 @@
     </style>
 </head>
 <body>
+<div style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">
+    <span th:if="${session.loginUser != null}">
+        <strong th:text="${session.loginUser.name}">사용자</strong>님 환영합니다! 
+        <a th:href="@{/user/logout}">
+            <button type="button">로그아웃</button>
+        </a>
+    </span>
+    <span th:unless="${session.loginUser != null}">
+        <a th:href="@{/user/login}">
+            <button type="button">로그인</button>
+        </a>
+        <a th:href="@{/user/register}">
+            <button type="button">회원가입</button>
+        </a>
+    </span>
+</div>
 <h1>게시글 목록</h1>
 
 <!-- 검색 폼 -->
