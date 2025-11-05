@@ -1,10 +1,13 @@
 package com.example.board.controller;
 
+import com.example.board.config.AppConfig;
 import com.example.board.entity.Board;
 import com.example.board.entity.Comment;
+import com.example.board.entity.User;
 import com.example.board.service.BoardService;
 import com.example.board.service.CommentService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,67 +25,99 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class BoardController {
-    private final BoardService boardService;
-    private final CommentService commentService;
 
-    @GetMapping("/board/list")
+	private final AppConfig appConfig;
+	private final BoardService boardService;
+	private final CommentService commentService;
 
-    public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC)Pageable pageable,
-                       @RequestParam(required = false) String searchType,
-                       @RequestParam(required = false) String keyword,
-                       Model model) {
-        Page<Board> boards;
+	@GetMapping("/board/list")
 
-        if (keyword != null && !keyword.isEmpty()) {
-            boards = boardService.search(searchType, keyword, pageable);
-        } else {
-            boards = boardService.findAll(pageable);
-        }
+	public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+			@RequestParam(required = false) String searchType, @RequestParam(required = false) String keyword,
+			Model model) {
+		Page<Board> boards;
 
-        model.addAttribute("boards", boards);
-        model.addAttribute("searchType", searchType);
-        model.addAttribute("keyword", keyword);
+		if (keyword != null && !keyword.isEmpty()) {
+			boards = boardService.search(searchType, keyword, pageable);
+		} else {
+			boards = boardService.findAll(pageable);
+		}
 
-        return "board/list";
-    }
+		model.addAttribute("boards", boards);
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("keyword", keyword);
 
-    @GetMapping("/board/detail/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        Board board = boardService.findById(id);
-        List<Comment> comments = commentService.findByBoardId(id);
-        model.addAttribute("board", board);
-        model.addAttribute("comments", comments);
-        return "board/detail";
-    }
+		return "board/list";
+	}
 
-    @GetMapping("/board/write")
-    public String writeForm() {
-        return "board/write";
-    }
+	@GetMapping("/board/detail/{id}")
+	public String detail(@PathVariable Long id, Model model) {
+		Board board = boardService.findById(id);
+		List<Comment> comments = commentService.findByBoardId(id);
+		model.addAttribute("board", board);
+		model.addAttribute("comments", comments);
+		return "board/detail";
+	}
 
-    @PostMapping("/board/write")
-    public String write(Board board) {
-        boardService.save(board);
-        return "redirect:/board/list";
-    }
+	@GetMapping("/board/write")
+	public String writeForm() {
+		return "board/write";
+	}
 
-    @GetMapping("/board/edit/{id}")
-    public String editForm(@PathVariable Long id, Model model) {
-        Board board = boardService.findById(id);
-        model.addAttribute("board", board);
-        return "board/edit";
-    }
+	@PostMapping("/board/write")
+	public String write(Board board, HttpSession session) {
+		User loginUser = (User) session.getAttribute("loginUser");
 
-    @PostMapping("/board/edit/{id}")
-    public String edit(@PathVariable Long id, Board board) {
-        boardService.update(id, board);
-        return "redirect:/board/detail/" + id;
-    }
+		if (loginUser == null) {
+			return "redirect:/user/login";
+		}
 
-    @GetMapping("/board/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        boardService.delete(id);
-        return "redirect:/board/list";
-    }
+		board.setWriter(loginUser.getName());
+
+		boardService.save(board);
+		return "redirect:/board/list";
+	}
+
+	@GetMapping("/board/edit/{id}")
+	public String editForm(@PathVariable Long id, Model model) {
+		Board board = boardService.findById(id);
+		model.addAttribute("board", board);
+		return "board/edit";
+	}
+
+	@PostMapping("/board/edit/{id}")
+	public String edit(@PathVariable Long id, Board board, HttpSession session) {
+		User loginUser = (User) session.getAttribute("loginUser");
+
+		if (loginUser == null) {
+			return "redirect:/user/login";
+		}
+
+		Board existingBoard = boardService.findById(id);
+
+		if (!loginUser.getName().equals(existingBoard.getWriter())) {
+			throw new RuntimeException("You are not the writer!");
+		}
+
+		boardService.update(id, board);
+		return "redirect:/board/detail/" + id;
+	}
+
+	@GetMapping("/board/delete/{id}")
+	public String delete(@PathVariable Long id, HttpSession session) {
+
+		User loginUser = (User) session.getAttribute("loginUser");
+		Board board = boardService.findById(id);
+		if (loginUser == null) {
+			return "redirect:/user/login";
+		}
+
+		if (!loginUser.getName().equals(board.getWriter())) {
+			throw new RuntimeException("you are not the writer!");
+		}
+
+		boardService.delete(id);
+		return "redirect:/board/list";
+	}
 
 }

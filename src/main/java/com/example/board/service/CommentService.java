@@ -20,6 +20,10 @@ public class CommentService {
         return commentRepository.findByBoardIdOrderByCreatedDateAsc(boardId);
     }
     
+    public Comment findById(Long id) {
+    	return commentRepository.findById(id).orElseThrow(() -> new RuntimeException("no comment you write before"));
+    }
+    
     // 댓글 저장
     public Comment save(Long boardId, String writer, String content) {
         Board board = boardRepository.findById(boardId)
