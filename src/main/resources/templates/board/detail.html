@@ -57,6 +57,33 @@
 		</tr>
 	</table>
 
+	<!-- 좋아요 영역 -->
+	<div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; text-align: center;">
+	    <div>
+	        <span style="font-size: 20px; margin-right: 10px;">
+	            <!-- 좋아요 했으면 빨간 하트, 안 했으면 회색 하트 -->
+	            <span th:if="${isLiked}" style="color: red;">♥</span>
+	            <span th:unless="${isLiked}" style="color: gray;">♡</span>
+	        </span>
+	        <strong>좋아요 <span th:text="${likeCount}">0</span>개</strong>
+	    </div>
+	    
+	    <!-- 로그인 시만 버튼 표시 -->
+	    <div th:if="${session.loginUser != null}" style="margin-top: 10px;">
+	        <form th:action="@{/board/{id}/like(id=${board.id})}" method="post" style="display: inline;">
+	            <button type="submit" style="padding: 8px 20px; cursor: pointer;">
+	                <span th:if="${isLiked}">좋아요 취소</span>
+	                <span th:unless="${isLiked}">좋아요</span>
+	            </button>
+	        </form>
+	    </div>
+	    <div th:unless="${session.loginUser != null}">
+	        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+	            좋아요를 누르려면 <a th:href="@{/user/login}">로그인</a>이 필요합니다.
+	        </p>
+	    </div>
+	</div>
+
 	<div>
 		<a th:href="@{/board/list}">
 			<button>목록</button>

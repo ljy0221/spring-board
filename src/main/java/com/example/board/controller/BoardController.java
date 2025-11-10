@@ -4,6 +4,7 @@ import com.example.board.config.AppConfig;
 import com.example.board.entity.Board;
 import com.example.board.entity.Comment;
 import com.example.board.entity.User;
+import com.example.board.service.BoardLikeService;
 import com.example.board.service.BoardService;
 import com.example.board.service.CommentService;
 
@@ -29,9 +30,9 @@ public class BoardController {
 	private final AppConfig appConfig;
 	private final BoardService boardService;
 	private final CommentService commentService;
+	private final BoardLikeService boardLikeService;
 
 	@GetMapping("/board/list")
-
 	public String list(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
 			@RequestParam(required = false) String searchType, @RequestParam(required = false) String keyword,
 			Model model) {
@@ -51,11 +52,23 @@ public class BoardController {
 	}
 
 	@GetMapping("/board/detail/{id}")
-	public String detail(@PathVariable Long id, Model model) {
+	public String detail(@PathVariable Long id, Model model, HttpSession session) {
 		Board board = boardService.findById(id);
 		List<Comment> comments = commentService.findByBoardId(id);
+		
+		long likeCount = boardLikeService.countLikes(id);
+		
+		boolean isLiked = false;
+		User loginUser = (User)session.getAttribute("loginUser");
+		if(loginUser != null) {
+			isLiked = boardLikeService.isLiked(id, loginUser.getId());
+		}
+		
 		model.addAttribute("board", board);
 		model.addAttribute("comments", comments);
+		model.addAttribute("likeCount", likeCount);
+		model.addAttribute("isLiked", isLiked);
+		
 		return "board/detail";
 	}
 
@@ -138,4 +151,15 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
+	@PostMapping("/board/{id}/like")
+	public String toggleLike(@PathVariable Long id, HttpSession session) {
+		User loginUser = (User)session.getAttribute("loginUser");
+		
+		if(loginUser == null) {
+			return "redirect:/user/login";
+		}
+		
+		boardLikeService.toggleLike(id, loginUser.getId());
+		return "redirect:/board/detail/" + id;
+	}
 }
