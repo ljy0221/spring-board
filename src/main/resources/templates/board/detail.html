@@ -8,8 +8,9 @@
 	<!-- 로그인 정보 표시 -->
 	<div
 		style="text-align: right; padding: 10px; border-bottom: 1px solid #ddd;">
-		<span th:if="${session.loginUser != null}"> <strong
-			th:text="${session.loginUser.name}">사용자</strong>님 환영합니다! <a
+		<span th:if="${session.loginUser != null}"> <a th:href="@{/user/profile}">
+		    <strong th:text="${session.loginUser.name}">사용자</strong>
+		</a>님 환영합니다! <a
 			th:href="@{/user/logout}">
 				<button type="button">로그아웃</button>
 		</a>
