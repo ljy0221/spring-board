@@ -84,6 +84,23 @@
 	        </p>
 	    </div>
 	</div>
+	
+	<!-- 첨부파일 영역 -->
+	<div th:if="${files != null && !files.isEmpty()}" 
+	     style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+	    <h4 style="margin-top: 0;">📎 첨부파일 (<span th:text="${files.size()}">0</span>개)</h4>
+	    <ul style="list-style: none; padding: 0; margin: 0;">
+	        <li th:each="file : ${files}" style="padding: 8px 0; border-bottom: 1px solid #eee;">
+	            <a th:href="@{/board/file/download/{fileId}(fileId=${file.id})}" 
+	               style="text-decoration: none; color: #333;">
+	                📄 <span th:text="${file.originalFileName}">파일명</span>
+	                <span style="color: #999; font-size: 12px; margin-left: 10px;">
+	                    (<span th:text="${#numbers.formatDecimal(file.fileSize / 1024.0, 1, 2)}">0</span> KB)
+	                </span>
+	            </a>
+	        </li>
+	    </ul>
+	</div>
 
 	<div>
 		<a th:href="@{/board/list}">

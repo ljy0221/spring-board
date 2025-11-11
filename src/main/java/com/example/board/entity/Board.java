@@ -40,6 +40,10 @@ public class Board {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL,
+    		orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<BoardFile> files = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
